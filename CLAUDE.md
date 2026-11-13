@@ -9,7 +9,6 @@ leve que controla um buzzer ativo no GPIO 18 com padrões rítmicos (som/silênc
 ## Estrutura
 - `platformio.ini` — env `esp32dev`, Arduino framework.
 - `src/main.cpp` — firmware ESP32: rotas (`/`, `/play`, `/stop`, `/status`, `/songs`, `/upload`, `/delete`), músicas padrão (seed) e buzzer.
-- `backend/music.py` — CLI Python (stdlib) no PC para listar/enviar/apagar músicas na ESP via HTTP. Não vai no firmware.
 - `frontend/` — `index.html`, `style.css`, `app.js`. É o `data_dir` do PlatformIO: vai para o LittleFS com `pio run -t uploadfs`.
 - `.claude/rules/` — regras de firmware e frontend.
 

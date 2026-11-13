@@ -4,7 +4,6 @@ A ESP32 cria sua própria rede Wi-Fi e hospeda uma página web para escolher e p
 
 ## Estrutura
 ```text
-backend/    music.py (CLI no PC), musicas/ (exemplos)
 frontend/   index.html, style.css, app.js
 src/        main.cpp (firmware ESP32)
 platformio.ini
@@ -77,17 +76,6 @@ Formato do arquivo:
 - Quantidade **par**, cada valor entre 10 e 10000 ms, até 512 valores, arquivo até 4 KB, até 20 músicas.
 
 Os arquivos ficam em `/songs/` no LittleFS e sobrevivem a reinicializações e a novos uploads do firmware (`upload`), mas são apagados por `uploadfs`.
-
-### Pelo backend (PC, Python 3)
-Conectado ao Wi-Fi da ESP32:
-```bash
-python3 backend/music.py list
-python3 backend/music.py upload backend/musicas/exemplo.txt --name "Exemplo"
-python3 backend/music.py delete exemplo
-python3 backend/music.py play exemplo
-python3 backend/music.py stop
-```
-Valida o arquivo com as mesmas regras do firmware antes de enviar. `--host` muda o IP (padrão `192.168.4.1`). Não precisa instalar nada.
 
 ## Limitações
 O buzzer ativo tem frequência interna fixa: só é possível variar duração de sons e pausas, não notas. Os padrões são ritmos inspirados nas músicas, **não** reproduções fiéis. Compilar não prova que o buzzer funciona; é necessário testar no hardware.

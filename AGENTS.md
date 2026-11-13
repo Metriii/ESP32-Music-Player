@@ -264,10 +264,6 @@ ESP32-Music-Player/
 ├── README.md
 ├── platformio.ini
 │
-├── backend/            (ferramenta opcional no PC, Python)
-│   ├── music.py
-│   └── musicas/        (arquivos .txt de exemplo)
-│
 ├── frontend/           (gravado no LittleFS com `pio run -t uploadfs`)
 │   ├── index.html
 │   ├── style.css
@@ -276,8 +272,6 @@ ESP32-Music-Player/
 └── src/
     └── main.cpp        (firmware ESP32: Wi-Fi, rotas HTTP, músicas, buzzer)
 ```
-
-`backend/music.py` é uma CLI Python (só biblioteca padrão) que roda no PC, conectado ao Wi-Fi da ESP32, e usa as rotas `/songs`, `/upload`, `/delete`, `/play` e `/stop`. Serve só para gerenciar músicas; a ESP32 funciona sem ele. Não faz parte do firmware.
 
 O frontend é editado em `frontend/` (HTML, CSS e JS separados) e enviado à placa com `pio run -t uploadfs`; mudar a interface não exige recompilar o firmware.
 
