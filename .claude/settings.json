@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pio run:*)",
+      "Bash(pio device monitor:*)",
+      "Bash(pio check:*)"
+    ],
+    "deny": [
+      "Read(./.env)"
+    ]
+  }
+}

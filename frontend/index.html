@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESP32 PLAYER</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main>
+
+    <!-- Cabeçalho + indicador de conexão -->
+    <header>
+      <h1>ESP32 PLAYER</h1>
+      <span id="conn">offline</span>
+    </header>
+
+    <!-- Música atual -->
+    <p id="now">Tocando: <b id="cur">nenhuma</b></p>
+
+    <!-- Lista de músicas (preenchida pelo app.js) -->
+    <div id="list"></div>
+
+    <button id="stop">Parar</button>
+
+    <!-- Envio de nova música -->
+    <h2>Enviar música</h2>
+    <input type="text" id="nm" maxlength="32" placeholder="Nome (opcional)">
+    <input type="file" id="file" accept=".txt,text/plain">
+    <button id="up">Enviar</button>
+
+    <!-- Mensagens de status/erro -->
+    <p id="msg"></p>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
