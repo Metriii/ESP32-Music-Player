@@ -7,11 +7,23 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <LittleFS.h>
+#include <ESPmDNS.h>
 
 // ---------- Configuração ----------
 static const char *AP_SSID = "ESP32-Music-Player";
 static const char *AP_PASS = "esp32music";
-static const uint8_t BUZZER_PIN = 18;
+// Rede 4G (hotspot do celular, 2,4 GHz). Se não conectar, a ESP32 volta a criar o AP acima.
+#include "secrets.h"  // define STA_SSID e STA_PASS (arquivo local, fora do Git)
+static const unsigned long STA_TIMEOUT_MS = 15000;
+// TESTE DE ENERGIA: 0 desliga Wi-Fi, servidor e mDNS (a ESP32 só liga o buzzer e escreve no Serial). Use 1 para o uso normal.
+#define ENABLE_WIFI 1
+
+// 3 buzzers ativos de 2 pinos, um por GPIO (sem transistor): cada pino alimenta só um buzzer.
+#define BUZZER_PIN1 18
+#define BUZZER_PIN2 19
+#define BUZZER_PIN3 21
+static const uint8_t BUZZER_PINS[] = {BUZZER_PIN1, BUZZER_PIN2, BUZZER_PIN3};
+static const size_t BUZZER_COUNT = sizeof(BUZZER_PINS) / sizeof(BUZZER_PINS[0]);
 // Polaridade do módulo: HIGH liga o buzzer. Inverta se o módulo for ativo em LOW.
 static const uint8_t BUZZER_ON = HIGH;
 static const uint8_t BUZZER_OFF = (BUZZER_ON == HIGH) ? LOW : HIGH;
@@ -205,7 +217,7 @@ static unsigned long stepStart = 0;
 
 static void setBuzzer(bool on) {
   buzzerOn = on;
-  digitalWrite(BUZZER_PIN, on ? BUZZER_ON : BUZZER_OFF);
+  for (size_t i = 0; i < BUZZER_COUNT; i++) digitalWrite(BUZZER_PINS[i], on ? BUZZER_ON : BUZZER_OFF);
 }
 
 // Carrega a música do arquivo e começa a tocar imediatamente (interrompe a anterior).
@@ -430,7 +442,7 @@ static void handleNotFound() {
 
 // ---------- Inicialização ----------
 static void setupBuzzer() {
-  pinMode(BUZZER_PIN, OUTPUT);
+  for (size_t i = 0; i < BUZZER_COUNT; i++) pinMode(BUZZER_PINS[i], OUTPUT);
   setBuzzer(false);
 }
 
@@ -443,6 +455,22 @@ static void setupStorage() {
 }
 
 static void setupWifi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(STA_SSID, STA_PASS);
+  Serial.print("Conectando em ");
+  Serial.println(STA_SSID);
+  unsigned long t0 = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - t0 < STA_TIMEOUT_MS) {
+    delay(250);  // só na inicialização, antes de qualquer reprodução
+  }
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("Conectado. IP: ");
+    Serial.println(WiFi.localIP());
+    if (MDNS.begin("esp32music")) Serial.println("Acesse tambem: http://esp32music.local");
+    return;
+  }
+  Serial.println("Falha na rede 4G; criando AP proprio.");
+  WiFi.disconnect(true);
   WiFi.mode(WIFI_AP);
   WiFi.softAP(AP_SSID, AP_PASS);
   Serial.print("AP: ");
@@ -469,11 +497,24 @@ void setup() {
   Serial.begin(115200);
   setupBuzzer();
   setupStorage();
+#if ENABLE_WIFI
   setupWifi();
   setupServer();
+#else
+  Serial.println("TESTE: Wi-Fi desligado, placa viva.");
+#endif
 }
 
 void loop() {
+#if ENABLE_WIFI
   server.handleClient();
   updatePlayer();
+#else
+  static unsigned long last = 0;
+  if (millis() - last >= 1000) {
+    last = millis();
+    Serial.print("vivo, uptime ms: ");
+    Serial.println(millis());
+  }
+#endif
 }

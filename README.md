@@ -12,14 +12,19 @@ A pasta `frontend/` é gravada no LittleFS da ESP32 (`pio run -t uploadfs`) e se
 
 ## Componentes
 - ESP32 DevKit
-- Buzzer ativo
+- 3 buzzers ativos (2 pinos)
 - (Opcional) transistor NPN + resistor de base ~1 kΩ, se o buzzer exigir mais corrente que o GPIO fornece (~12 mA recomendado)
 
 ## Ligações
-| Buzzer | ESP32 |
-|---|---|
-| + (sinal) | GPIO 18 |
-| − | GND |
+3 buzzers ativos de 2 pinos, cada um em seu GPIO (sem transistor). Os três tocam o mesmo padrão ao mesmo tempo.
+
+| Buzzer | + (sinal) | − |
+|---|---|---|
+| 1 | GPIO 18 | GND |
+| 2 | GPIO 19 | GND |
+| 3 | GPIO 21 | GND |
+
+Os três − podem dividir o mesmo GND. Cada GPIO alimenta só um buzzer; se algum consumir mais de ~20 mA, use um transistor NPN + resistor de ~1 kΩ naquele canal.
 
 Se o módulo for ativo em LOW, altere `BUZZER_ON` em `src/main.cpp`.
 
@@ -42,6 +47,9 @@ pio device monitor   # Serial Monitor
 ```
 
 > Rode os **dois** uploads na primeira vez. `uploadfs` regrava a partição de arquivos e **apaga as músicas enviadas por você** (as 4 padrão são recriadas ao ligar). Sem o `uploadfs`, a página mostra "Frontend ausente".
+
+## Rede Wi-Fi do celular (opcional)
+Copie `src/secrets.example.h` para `src/secrets.h` e preencha `STA_SSID`/`STA_PASS`. A ESP32 tenta essa rede (2,4 GHz) por 15 s; se falhar, cria o AP `ESP32-Music-Player`. O `secrets.h` não vai para o Git.
 
 ## Acesso
 - SSID: `ESP32-Music-Player`
